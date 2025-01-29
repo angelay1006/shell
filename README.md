@@ -1,37 +1,51 @@
 ```
- ____  _          _ _   ____
-/ ___|| |__   ___| | | |___ \
-\___ \| '_ \ / _ \ | |   __) |
- ___) | | | |  __/ | |  / __/
-|____/|_| |_|\___|_|_| |_____|
+ ____  _          _ _  
+/ ___|| |__   ___| | |
+\___ \| '_ \ / _ \ | |  
+ ___) | | | |  __/ | |  
+|____/|_| |_|\___|_|_| 
 ```
-# Program Structure
-- **Overview**: This custom shell processes commands from the user, handles input/output
-redirection, manages job control, and has basic shell functionality. Shell 2 extends
-the code from [Shell 1](https://github.com/cs0330-fall2024/shell-1-angelay1006) and adds support for job management, both foreground and background.  
-- **Flow**
-  - First, the shell's job list and process group ID are initialized. 
-  - We then enter a REPL loop where the prompt can be optionally displayed. The loop
-    reads and processes user input where the command, arguments, and redirection are set up. 
-    - `&` is used to execute jobs in the background
-    - `fg` command is used to bring a background job to the foreground
-    - `bg` command can continue a stopped job in the background
-  - If the command is built-in (ie. `cd`, `ln`, `rm`, `exit`, `jobs`, `fg`, `bg`),
-    it's executed directly without creating a new process. 
-  - For external commands, a child process is created, input/output redirection are 
-    handled, and job control is managed for foreground/background execution
-  - If a background job is completed, it will be reaped before the next prompt. 
-- **Error Handling**: There are many checks on user input, system calls, and operations on 
-files. Informative error messages will be printed for failure in these cases. 
+## Overview
+I wrote this custom shell for Brown University's _CS1330: Introduction to Computer Systems_; this version has been cleaned up and modified to run on any local machine, without the need for a course container. This project implements job control functionality and supports background job execution, foreground and background job management, signal forwarding, and job reaping.
 
-# Bugs
-- There aren't any known bugs in this implementation
-# Extra Features
-- None have been added so far beyond command execution and job control
-# How to Compile
-- In this repository there is a `Makefile` provided — running `make` will compile 
-  both versions, `33sh` (shell with prompt) and `33noprompt` (shell without prompt)
-- To compile only the version with the prompt run `make 33sh`
-- To compile only the version without the prompt run `make 33noprompt`
-- To clean up build files run `make clean`
-- To run with prompt, run `./33sh`, and to run without, `./33noprompt`
+From this project I reinforced my understanding of process control (using `fork()`, `execv()`, `waitpid()`). I also learned how to manage signals like `SIGINT`, `SIGTSTP`, `SIGCONT`, and `SIGCHLD`, as well as handling background, foreground and suspended jobs properly. Other than that, I learned how to forward signals and manage process groups, and use `open()`, `close()`, `dup2()`, and error checking for file I/O and redirection. 
+
+**Note**: The files `jobs.c` and `jobs.h` were provided by _CS1330_ and contain support code for tracking jobs; my implementation focuses on handling job control, user signal management and handling processes. 
+
+## Features
+- Runs external commands, using `fork()` and `execv()`
+- Built-in commands: Implements `cd`, `ln`, `rm`, `exit`
+- Input and Output Redirection: Supports `<`, `>`, and `>>` for file I/O
+- Error handling: This shell will gracefully handle malformed input and syscall errors
+- Foreground and Background Jobs: Users can run commands in the background using &.
+- Job Management: The shell tracks jobs and allows users to list them using the `jobs` command.
+- Signal Handling: There is proper handling of `SIGINT`, `SIGTSTP`, and `SIGCONT`.
+- Reaping Background Jobs: Ensures that terminated jobs are correctly removed from the job list.
+- Built-in commands:
+  
+    | Command | Description |
+    | --- | --- |
+    | `cd <directory>` | Change the working directory. |
+    | `ln <target> <link>` | Create a hard link |
+    | `rm <file>`| Removes a file |
+    | `jobs`| Lists all background and stopped jobs |
+    | `fg %<jid>`| Resume a background job in the foreground |
+    | `bg %<jid>` | Resume a stopped job in the background |
+    | `exit` | Clean up and exit the shell |
+
+## Code Structure
+- `sh.c` is the core shell implementation (user input handling, job control, execution, signal handling)
+- `jobs.c` is course-provided support code for tracking jobs
+- `jobs.h` is the header file for job related functions, also provided by Brown University
+-  Compilation instructions are included in the `Makefile` which I wrote
+
+## Installation & Compilation
+The prerequisites are that you have a Linux/macOS environment with `gcc`, and some basic familiarity with terminal commands. For compilation, clone the repository and compile using `make` which will generate an executable named `myshell`. Then, you can start the shell by running `./myshell`. 
+
+## References
+- Brown University's [CS1330](https://cs0330-fall2024.github.io/)
+
+
+   
+   
+    
