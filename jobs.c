@@ -22,7 +22,7 @@ struct job_list {
 };
 
 /* initializes job list, returns pointer */
-job_list_t *init_job_list() {
+job_list_t *init_job_list(void) {
     job_list_t *job_list = (job_list_t *)malloc(sizeof(job_list_t));
     job_list->head = NULL;
     job_list->current = NULL;

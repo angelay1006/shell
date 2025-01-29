@@ -9,7 +9,7 @@ typedef enum { RUNNING, STOPPED } process_state_t;
 typedef struct job_list job_list_t;
 
 /* initializes job list, returns pointer */
-job_list_t *init_job_list();
+job_list_t *init_job_list(void);
 /*
  * cleans up jobs list
  * Note: this function will free the job_list pointer

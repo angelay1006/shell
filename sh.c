@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include "./jobs.h"
 #include <sys/types.h>  // pid_t
+#include <signal.h>  // Required for kill()
 
 #define BUFFER_SIZE 1024
 #define TOKEN_SIZE 512
@@ -22,9 +23,10 @@ int next_jid = 1;      // counter for job IDs, increments when new jobs added
  */
 void print_prompt(void) {
 #ifdef PROMPT
-    if (printf("33sh> ") < 0) {
+    if (printf("talk to shell: ") < 0) {
         perror("printf error with print_prompt");
     }
+    fflush(stdout);  // Force the output to appear immediately
 #endif
 }
 
@@ -484,7 +486,7 @@ void check_background_jobs(job_list_t *job_list) {
  *
  * returns 0, if successfully completed
  */
-int main() {
+int main(void) {
     job_list = init_job_list();
 
     // get shell's process group ID

@@ -1,7 +1,0 @@
-#
-# trace27.txt - jobs run in the foreground never appear in the jobs list
-#
-#
-
-/bin/echo Jobs:
-jobs

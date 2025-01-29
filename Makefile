@@ -1,39 +1,30 @@
 CC = gcc
-CFLAGS = -g3 -Wall -Wextra -Wconversion -Wcast-qual -Wcast-align
-CFLAGS += -Winline -Wfloat-equal -Wnested-externs
-CFLAGS += -pedantic -std=gnu99 -Werror
-CFLAGS += -D_GNU_SOURCE
+CFLAGS = -g3 -Wall -Wextra -Wconversion -Wcast-qual -Wcast-align \
+         -Winline -Wfloat-equal -Wnested-externs -pedantic -std=c99 -Werror
 
-PROMPT = -DPROMPT
+# Define -D_GNU_SOURCE only if compiling on Linux
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+    CFLAGS += -D_GNU_SOURCE
+endif
+
+
+CFLAGS += -DPROMPT
 
 SRC = sh.c jobs.c
+OBJ = $(SRC:.c=.o)
+TARGET = myshell
 
-EXECS = 33sh 33noprompt
+all: $(TARGET)
 
-# default target
-.PHONY: all
-all: $(EXECS)
+$(TARGET): $(OBJ)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJ)
 
-# compile your program, including the -DPROMPT macro
-33sh: CFLAGS += $(PROMPT)
-33sh: sh_with_prompt.o jobs.o
-	$(CC) $(CFLAGS) -o $@ sh_with_prompt.o jobs.o
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
-sh_with_prompt.o: sh.c
-	$(CC) $(CFLAGS) -c -o $@ sh.c
-
-jobs.o: jobs.c
-	$(CC) $(CFLAGS) -c -o $@ jobs.c
-
-# compile your program without the prompt macro
-33noprompt: sh_without_prompt.o jobs.o
-	$(CC) $(CFLAGS) -o $@ sh_without_prompt.o jobs.o
-sh_without_prompt.o: sh.c
-	$(CC) $(CFLAGS) -c -o $@ sh.c
-
-# clean up any executable files that this Makefile has produced
+# Clean Command
 .PHONY: clean
 clean:
-	rm -f *.o $(EXECS)
-	
+	rm -f $(OBJ) $(TARGET)
 
